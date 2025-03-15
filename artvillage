@@ -1,0 +1,123 @@
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+import { useState } from "react";
+
+export default function PrelaunchLanding() {
+    const [formData, setFormData] = useState({
+    role: [],
+    name: "",
+    phone: "",
+    email: "",
+    org: "",
+    message: ""
+  });
+
+  const handleCheckboxChange = (roleLabel) => {
+    setFormData((prev) => {
+      const exists = prev.role.includes(roleLabel);
+      return {
+        ...prev,
+        role: exists ? prev.role.filter((r) => r !== roleLabel) : [...prev.role, roleLabel]
+      };
+    });
+  };
+
+  const handleSubmit = async () => {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbyjF14I4mGc0kjmvSSPaHm42LnzbdtlDj11Cf0fcC42zewH9xu5QW4zX2druwEMDD794Q/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    });
+
+    const result = await response.json();
+    if (result.result === "success") {
+      alert("신청이 완료되었습니다. 감사합니다!");
+    } else {
+      alert("문제가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col items-center py-12 px-4">
+      <div className="max-w-xl w-full text-center">
+        <h1 className="text-3xl font-bold mb-4">
+  예술로 가득한 우리동네<br />
+  공연장, 기획사, 아티스트, 다 모여라
+</h1>
+        <p className="text-lg mb-6">
+          기획사 · 공연장 · 아티스트 모두를 위한 공연 운영 매니저<br />
+          지금 사전 신청하고 베타 오픈 소식을 먼저 받아보세요!
+        </p>
+
+        <div className="text-left mb-8 space-y-4">
+          <h2 className="text-xl font-semibold">마스킷이 해결하는 문제들</h2>
+          <div>
+            <strong>🎯 기획사:</strong> 혼자서 티켓 발권, 홍보, 정산, 피드백 수집까지. 그것도 각각 다른 플랫폼에서 해야 했다면?<br />
+            → 매번 다른 공연장을 대관해도 괜찮아요. 예매부터 관객 데이터/피드백 수집, 홍보 마케팅, 정산까지, 이제는 하나의 서비스 안에서 통합운영하세요.
+          </div>
+          <div>
+            <strong>🏛 공연장/공간:</strong> 매번 이메일이나 수기로 대관을 처리하고 계신가요?<br />
+→ 대관 일정은 온라인으로 효율적으로 관리해보세요.
+          </div>
+          <div>
+            <strong>🎤 아티스트:</strong> 계약서도 없고, 이력도 남지 않고, 출연료 입금도 깜깜무소식? 다시 겪고 싶지 않죠.<br />
+→ 계약부터 정산, 포트폴리오까지 정리해주는 서비스를 사용해보세요.
+          </div>
+        </div>
+
+        <Card>
+          <CardContent className="p-6 space-y-4">
+            <div>
+              <label className="block text-left text-sm font-medium mb-1">
+                어떤 역할로 신청하시나요? (중복 선택 가능)
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <Checkbox id="role1" onCheckedChange={() => handleCheckboxChange("기획사")} /> 기획사
+                </label>
+                <label className="flex items-center gap-2">
+                  <Checkbox id="role2" onCheckedChange={() => handleCheckboxChange("공연장/공간 운영자")} /> 공연장/공간 운영자
+                </label>
+                <label className="flex items-center gap-2">
+                  <Checkbox id="role3" onCheckedChange={() => handleCheckboxChange("아티스트")} /> 아티스트
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-left text-sm font-medium mb-1">성함</label>
+              <Input placeholder="홍길동" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-left text-sm font-medium mb-1">연락처 (전화번호)</label>
+              <Input placeholder="010-1234-5678" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-left text-sm font-medium mb-1">이메일</label>
+              <Input placeholder="your@email.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-left text-sm font-medium mb-1">소속 (선택)</label>
+              <Input placeholder="회사명, 공간명, 혹은 프리랜서 등" value={formData.org} onChange={(e) => setFormData({ ...formData, org: e.target.value })} />
+            </div>
+
+            <div>
+  <label className="block text-left text-sm font-medium mb-1">남기고 싶은 한 마디 (선택)</label>
+  <Textarea placeholder="마스킷에 바라는 점이나 하고 싶은 말을 적어주세요." value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} />
+</div>
+
+<Button className="w-full" onClick={handleSubmit}>사전 신청하기</Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
